@@ -83,3 +83,26 @@ jobs:
           project_id: ${{ env.project-number }}
           resource_node_id: ${{ github.event.issue.node_id }}
           status_value: ${{ env.done }} # Target status
+
+  new-job:
+   runs-on: ubuntu-latest
+   steps:
+      - name: Get Token
+        id: get_workflow_token
+        uses: peter-murray/workflow-application-token-action@8e1ba3bf1619726336414f1014e37f17fbadf1db
+        with:
+          application_id: ${{ secrets.GH_APPLICATION_ID }}
+          application_private_key: ${{ secrets.GH_APPLICATION_PRIVATE_KEY }}
+      
+      - uses: Machine-Maker/add-to-project-action@0.2.0
+        with:
+          github-token: ${{ steps.get_workflow_token.outputs.token }}
+          project-url: https://github.com/orgs/devops-actions/projects/2/views/1 # e.g. https://github.com/users/Machine-Maker/projects/1/views/1
+          column-field: Status
+          label-to-column-map: |
+            {
+              "bug": "Todo",
+              "enhancement": "In Progress",
+              "wontfix": "Invalid",
+              "duplicate": "Invalid"
+            }
